@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resIssues = document.getElementById('res-issues');
 
     analyzeBtn.addEventListener('click', async () => {
-        const repoUrl = repoUrlInput.value.trim();
+        let repoUrl = repoUrlInput.value.trim();
         const token = tokenInput.value.trim();
 
         if (!repoUrl) {
@@ -22,8 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!repoUrl.includes('github.com/')) {
-            showError('Please enter a valid GitHub repository URL.');
+        // Extract repo path (username/repo)
+        let repoPath = '';
+        try {
+            const urlObj = new URL(repoUrl);
+            if (urlObj.hostname !== 'github.com') throw new Error();
+            repoPath = urlObj.pathname.split('/').slice(1, 3).join('/');
+            if (repoPath.split('/').length < 2) throw new Error();
+        } catch (e) {
+            showError('Please enter a valid GitHub repository URL (e.g., https://github.com/facebook/react).');
             return;
         }
 
@@ -33,30 +40,69 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingDiv.classList.remove('hidden');
         analyzeBtn.disabled = true;
 
+        const headers = {};
+        if (token) {
+            headers["Authorization"] = `token ${token}`;
+        }
+
+        const baseApi = `https://api.github.com/repos/${repoPath}`;
+
         try {
-            const response = await fetch('/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    repo_url: repoUrl,
-                    token: token || null
-                }),
+            // 1. Languages
+            const langRes = await fetch(`${baseApi}/languages`, { headers });
+            if (!langRes.ok) throw new Error('Repository not found or API limit reached');
+            const langData = await langRes.json();
+            
+            const totalBytes = Object.values(langData).reduce((a, b) => a + b, 0);
+            const loc = Math.floor(totalBytes / 40);
+
+            // 2. PRs
+            const prsRes = await fetch(`https://api.github.com/search/issues?q=repo:${repoPath}+type:pr`, { headers });
+            const prsData = await prsRes.json();
+            const prs = prsData.total_count || 0;
+
+            // 3. Issues
+            const issuesRes = await fetch(`https://api.github.com/search/issues?q=repo:${repoPath}+type:issue`, { headers });
+            const issuesData = await issuesRes.json();
+            const issues = issuesData.total_count || 0;
+
+            // 4. Commits (estimate from Link header or simple fetch)
+            const commitsRes = await fetch(`${baseApi}/commits?per_page=1`, { headers });
+            let commits = 0;
+            const linkHeader = commitsRes.headers.get('link');
+            if (linkHeader) {
+                const match = linkHeader.match(/page=(\d+)>; rel="last"/);
+                commits = match ? parseInt(match[1]) : 0;
+            } else {
+                const commitsData = await commitsRes.json();
+                commits = Array.isArray(commitsData) ? commitsData.length : 0;
+            }
+
+            // 5. Language Breakdown
+            const languages = [];
+            if (totalBytes > 0) {
+                const sortedLangs = Object.entries(langData)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 5);
+                
+                sortedLangs.forEach(([name, bytes]) => {
+                    languages.push({
+                        name,
+                        percentage: ((bytes / totalBytes) * 100).toFixed(1)
+                    });
+                });
+            }
+
+            displayResults({
+                repo_name: repoPath,
+                loc,
+                prs,
+                commits,
+                issues,
+                languages
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to analyze repository');
-            }
-
-            const data = await response.json();
-            displayResults(data);
             
-            // Re-initialize Lucide icons for any dynamic elements
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-            
-            // Smooth scroll to results
+            if (window.lucide) lucide.createIcons();
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         } catch (error) {
