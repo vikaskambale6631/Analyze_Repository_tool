@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RepoAnalyzer | GitHub Repository Insights</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <h1 class="fade-in">Analyze Any GitHub <span class="gradient-text">Repository Instantly</span></h1>
+            <p class="hero-subtext fade-in-delay">Get repository insights like Lines of Code, Commits, Pull Requests, Issues and Language breakdown in seconds.</p>
+            <a href="#analyzer" class="cta-button">Start Analyzing</a>
+        </div>
+    </header>
+
+    <main id="analyzer" class="main-content">
+        <div class="container">
+            <div class="glass-card analyzer-card">
+                <div class="card-header">
+                    <h2>Repository Analyzer</h2>
+                    <p>Enter repository details below to begin analysis</p>
+                </div>
+                
+                <div class="form-container">
+                    <div class="input-wrapper">
+                        <i data-lucide="link" class="input-icon"></i>
+                        <input type="text" id="repo-url" placeholder="GitHub Repository URL (e.g., https://github.com/facebook/react)" required>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <i data-lucide="key" class="input-icon"></i>
+                        <input type="password" id="github-token" placeholder="GitHub Token (Optional for higher rate limits)">
+                    </div>
+
+                    <button id="analyze-btn" class="primary-btn">
+                        <span>Analyze Repository</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+
+                <div id="loading" class="loading-overlay hidden">
+                    <div class="spinner"></div>
+                    <p>Fetching repository insights...</p>
+                </div>
+
+                <div id="error-message" class="error-box hidden"></div>
+            </div>
+
+            <section id="results" class="results-dashboard hidden">
+                <div class="section-title">
+                    <h3>Analysis Results: <span id="res-name-title" class="gradient-text">repository</span></h3>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="card-stat">
+                        <div class="stat-icon loc-icon">
+                            <i data-lucide="code"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="res-loc">0</h4>
+                            <p>Lines of Code</p>
+                        </div>
+                    </div>
+
+                    <div class="card-stat">
+                        <div class="stat-icon commits-icon">
+                            <i data-lucide="git-commit"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="res-commits">0</h4>
+                            <p>Total Commits</p>
+                        </div>
+                    </div>
+
+                    <div class="card-stat">
+                        <div class="stat-icon prs-icon">
+                            <i data-lucide="git-pull-request"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="res-prs">0</h4>
+                            <p>Pull Requests</p>
+                        </div>
+                    </div>
+
+                    <div class="card-stat">
+                        <div class="stat-icon issues-icon">
+                            <i data-lucide="alert-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4 id="res-issues">0</h4>
+                            <p>Open Issues</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card languages-section">
+                    <div class="card-header">
+                        <h3>Language Composition</h3>
+                        <p>Detailed breakdown of technologies used</p>
+                    </div>
+                    <div id="languages-container" class="languages-list">
+                        <!-- Progress bars will be injected here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">RepoAnalyzer</div>
+                <p>&copy; 2026 RepoAnalyzer. Developed by Vikas Kambale.</p>
+                <div class="social-links">
+                    <a href="https://vikaskambale6631.github.io/vikas-kambale-portfolio/" target="_blank" title="Connect to Vikas Kambale">
+                        <span style="font-size: 0.9rem; font-weight: 600;">Connect to Vikas Kambale</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
