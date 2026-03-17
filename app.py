@@ -10,10 +10,6 @@ CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 def index():
     return send_from_directory('.', 'index.html')
 
-@app.route('/favicon.ico')
-def favicon():
-    return '', 204
-
 # Route to serve static files (CSS, JS)
 @app.route('/<path:path>')
 def static_files(path):
