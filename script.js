@@ -30,8 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsPanel.classList.add('hidden');
         analyzeBtn.disabled = true;
 
+        // Determine API URL
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? '' 
+            : 'https://your-backend-url.onrender.com'; // User needs to replace this after deployment
+
         try {
-            const response = await fetch('/analyze', {
+            const response = await fetch(`${API_URL}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ repo_url: repoUrl, token: token })

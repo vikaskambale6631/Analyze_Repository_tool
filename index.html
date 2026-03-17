@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <title>RepoInsights | Premium Developer Dashboard</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Suppress Tailwind production warning
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            console.log = (function(oldLog) {
+                return function(msg) {
+                    if (typeof msg === 'string' && msg.includes('cdn.tailwindcss.com should not be used in production')) return;
+                    oldLog.apply(console, arguments);
+                };
+            })(console.log);
+        }
+    </script>
     <script>
         tailwind.config = {
             theme: {

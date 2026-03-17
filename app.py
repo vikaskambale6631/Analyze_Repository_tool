@@ -1,7 +1,9 @@
 import os
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app) # Enable CORS for all routes
 
 # Route to serve the frontend
 @app.route('/')
