@@ -30,10 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsPanel.classList.add('hidden');
         analyzeBtn.disabled = true;
 
-        // Determine API URL
+        // Determine API URL dynamically
         const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
             ? '' 
-            : 'https://your-backend-url.onrender.com'; // User needs to replace this after deployment
+            : window.location.origin; // Dynamically use the current origin if deployed on the same server
 
         try {
             const response = await fetch(`${API_URL}/analyze`, {
