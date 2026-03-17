@@ -22,6 +22,10 @@ def get_repo_stats(repo_url, token=None):
         # 1. Languages & LOC
         lang_response = requests.get(f"{base_api}/languages", headers=headers)
         lang_data = lang_response.json()
+        
+        if not isinstance(lang_data, dict):
+            return {"error": f"Failed to fetch languages: {lang_data.get('message', 'Unknown error')}"}
+            
         total_bytes = sum(lang_data.values())
         
         # Refined Heuristic: Language-specific character-per-line (CPL)
