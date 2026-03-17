@@ -1,6 +1,7 @@
 import requests
 import sys
 import base64
+import os
 
 def get_repo_stats(repo_url, token=None):
     repo_path = repo_url.replace("https://github.com/", "").strip("/")
@@ -8,8 +9,11 @@ def get_repo_stats(repo_url, token=None):
         repo_path = repo_path.replace(".git", "")
 
     headers = {"Accept": "application/vnd.github.v3+json"}
-    if token:
-        headers["Authorization"] = f"token {token}"
+    
+    # Use provided token or fallback to environment variable
+    effective_token = token or os.environ.get("GITHUB_TOKEN")
+    if effective_token:
+        headers["Authorization"] = f"token {effective_token}"
 
     base_api = f"https://api.github.com/repos/{repo_path}"
 
@@ -22,6 +26,10 @@ def get_repo_stats(repo_url, token=None):
         # 1. Languages & LOC
         lang_response = requests.get(f"{base_api}/languages", headers=headers)
         lang_data = lang_response.json()
+        
+        if "message" in lang_data:
+            return {"error": f"GitHub API error: {lang_data['message']}"}
+
         total_bytes = sum(lang_data.values())
         
         # Refined Heuristic: Language-specific character-per-line (CPL)

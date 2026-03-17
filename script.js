@@ -57,7 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsPanel.scrollIntoView({ behavior: 'smooth' });
 
         } catch (error) {
-            showError(error.message);
+            let userMessage = error.message;
+            if (userMessage.includes('rate limit exceeded')) {
+                userMessage = 'GitHub API rate limit exceeded. Please provide a Personal Access Token to continue.';
+            }
+            showError(userMessage);
         } finally {
             loadingOverlay.classList.add('hidden');
             analyzeBtn.disabled = false;

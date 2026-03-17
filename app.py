@@ -24,16 +24,16 @@ def analyze():
     if not repo_url:
         return jsonify({"error": "Repository URL is required"}), 400
 
-    import repo_stats
-    import importlib
-    importlib.reload(repo_stats) # Ensure it picks up changes
-    
-    stats = repo_stats.get_repo_stats(repo_url, token)
-    
-    if "error" in stats:
-        return jsonify({"error": stats["error"]}), 400
+    try:
+        from repo_stats import get_repo_stats
+        stats = get_repo_stats(repo_url, token)
         
-    return jsonify(stats)
+        if "error" in stats:
+            return jsonify({"error": stats["error"]}), 400
+            
+        return jsonify(stats)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
